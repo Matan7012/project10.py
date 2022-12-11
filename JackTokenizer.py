@@ -100,7 +100,18 @@ class JackTokenizer:
         """
         # Your code goes here!
         # A good place to start is to read all the lines of the input:
+
         # input_lines = input_stream.read().splitlines()
+        self.current_line = 0
+        input_lines = input_stream.read().splitlines()
+        # delete comments
+        lines = []
+        for i in range(len(input_lines)):
+            input_lines[i] = input_lines[i].split('//')[0].strip()
+            if input_lines[i] != '':
+                # delete enter
+                lines.append(input_lines[i])
+        self.input_lines = lines
         pass
 
     def has_more_tokens(self) -> bool:
