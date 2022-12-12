@@ -6,7 +6,7 @@ as allowed by the Creative Common Attribution-NonCommercial-ShareAlike 3.0
 Unported [License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
 """
 import typing
-
+import re
 
 class JackTokenizer:
     """Removes all comments from the input stream and breaks it
@@ -80,7 +80,7 @@ class JackTokenizer:
     
     - expression: term (op term)*
     - term: integerConstant | stringConstant | keywordConstant | varName | 
-            varName '['expression']' | subroutineCall | '(' expression ')' | 
+            varName '['expression']' | subroutineCall | '(' expression ')' |
             unaryOp term
     - subroutineCall: subroutineName '(' expressionList ')' | (className | 
                       varName) '.' subroutineName '(' expressionList ')'
@@ -100,18 +100,14 @@ class JackTokenizer:
         """
         # Your code goes here!
         # A good place to start is to read all the lines of the input:
+        input_str = input_stream.read()
+        input_str_no_comments = re.sub("\/\*[\s\S]*?\*\/|\/\/.*|\/\*\*[\s\S]*?\*\/",'\n',input_str) #replaces all the comments with newline.
+        input_str_clean = re.sub("","",input_str_no_comments)
+        input_lines = input_str.splitlines()
 
-        # input_lines = input_stream.read().splitlines()
-        self.current_line = 0
-        input_lines = input_stream.read().splitlines()
-        # delete comments
-        lines = []
-        for i in range(len(input_lines)):
-            input_lines[i] = input_lines[i].split('//')[0].strip()
-            if input_lines[i] != '':
-                # delete enter
-                lines.append(input_lines[i])
-        self.input_lines = lines
+        no_comment_input = []
+        for i in input_lines:
+
         pass
 
     def has_more_tokens(self) -> bool:
