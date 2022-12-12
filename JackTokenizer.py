@@ -8,6 +8,9 @@ Unported [License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
 import typing
 import re
 
+SYMBOLS = {'{' , '}' , '(' , ')' , '[' , ']' , '.' , ',' , ';' , '+' ,
+              '-' , '*' , '/' , '&' , '|' , '<' , '>' , '=' , '~' , '^' , '#'}
+
 class JackTokenizer:
     """Removes all comments from the input stream and breaks it
     into Jack language tokens, as specified by the Jack grammar.
@@ -101,12 +104,11 @@ class JackTokenizer:
         # Your code goes here!
         # A good place to start is to read all the lines of the input:
         input_str = input_stream.read()
-        input_str_no_comments = re.sub("\/\*[\s\S]*?\*\/|\/\/.*|\/\*\*[\s\S]*?\*\/",'\n',input_str) #replaces all the comments with newline.
-        input_str_clean = re.sub("","",input_str_no_comments)
-        input_lines = input_str.splitlines()
-
-        no_comment_input = []
-        for i in input_lines:
+        input_str_no_comments = re.sub("\/\*[\s\S]*?\*\/|\/\/.*|\/\*\*[\s\S]*?\*\/",'',input_str) #replaces all the comments with empty space.
+        input_str_clean = re.sub("(^\s*\n)|(\s+$)(^\s*\n)|(\s+$)/m","",input_str_no_comments) #removes the white spaces at the end of line
+        # and removes the empty lines with a newline.
+        self.input_lines = input_str.splitlines(input_str_clean)
+        self.i = 0
 
         pass
 
@@ -116,16 +118,20 @@ class JackTokenizer:
         Returns:
             bool: True if there are more tokens, False otherwise.
         """
+        if self.i < len(self.input_lines) and self.input_lines[self.i] != '':
+            return True
         # Your code goes here!
-        pass
+        return False
 
     def advance(self) -> None:
         """Gets the next token from the input and makes it the current token. 
         This method should be called if has_more_tokens() is true. 
         Initially there is no current token.
         """
+        self.input_lines[self.i] = re.sub("^\s*","",self.input_lines[self.i])
+        if self.input_lines[self.i] == '':
+            self.i += 1
         # Your code goes here!
-        pass
 
     def token_type(self) -> str:
         """
@@ -134,6 +140,9 @@ class JackTokenizer:
             "KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"
         """
         # Your code goes here!
+        if self.input_lines[self.i][0] in SYMBOLS:
+            return "SYMBOL"
+        x = re.search('^()')
         pass
 
     def keyword(self) -> str:
