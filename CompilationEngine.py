@@ -6,6 +6,7 @@ as allowed by the Creative Common Attribution-NonCommercial-ShareAlike 3.0
 Unported [License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
 """
 import typing
+import JackTokenizer
 
 
 class CompilationEngine:
@@ -22,18 +23,56 @@ class CompilationEngine:
         """
         # Your code goes here!
         # Note that you can write to output_stream like so:
+        self.output_stream = output_stream
+        self.jacktokenizer = input_stream
         # output_stream.write("Hello world! \n")
         pass
 
     def compile_class(self) -> None:
         """Compiles a complete class."""
-        # Your code goes here!
-        pass
+        self.output_stream.write("<class>\n")
+        self.jacktokenizer.advance()
+
+        self.write_keyword()
+        self.jacktokenizer.advance()
+
+        self.write_identifier()
+        self.jacktokenizer.advance()
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+        while self.jacktokenizer.keyword() == "STATIC" or self.jacktokenizer.keyWord() == "FIELD":
+            self.compile_class_var_dec()
+        while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyWord() == "FUNCTION" \
+                or self.jacktokenizer.keyWord() == "METHOD":
+            self.compile_subroutine()
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+
+        self.output_stream.write("</class>\n")
 
     def compile_class_var_dec(self) -> None:
         """Compiles a static declaration or a field declaration."""
-        # Your code goes here!
-        pass
+        self.output_stream.write("<classVarDec>\n")
+        self.jacktokenizer.advance()
+
+        self.write_keyword()
+        self.jacktokenizer.advance()
+        self.write_type()
+        self.jacktokenizer.advance()
+        self.write_identifier()
+        self.jacktokenizer.advance()
+
+        while self.jacktokenizer.symbol() != ";":
+            self.write_symbol()
+            self.jacktokenizer.advance()
+            self.write_identifier()
+            self.jacktokenizer.advance()
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+        self.output_stream.write("</classVarDec>\n")
 
     def compile_subroutine(self) -> None:
         """
@@ -41,20 +80,54 @@ class CompilationEngine:
         You can assume that classes with constructors have at least one field,
         you will understand why this is necessary in project 11.
         """
-        # Your code goes here!
-        pass
+        self.output_stream.write("<subroutineDec>\n")
+        self.jacktokenizer.advance()
+
+        self.write_keyword()
+        self.jacktokenizer.advance()
+        if self.jacktokenizer.keyword() == "VOID":
+            self.write_keyword()
+            self.jacktokenizer.advance()
+        else:
+            self.write_type()
+            self.jacktokenizer.advance()
+
+        self.write_identifier()
+        self.jacktokenizer.advance()
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+
+        self.compile_parameter_list()
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+
+        self.compile_subroutineBody()
+
+        self.output_stream.write("</subroutineDec>\n")
 
     def compile_parameter_list(self) -> None:
         """Compiles a (possibly empty) parameter list, not including the 
         enclosing "()".
         """
         # Your code goes here!
+        self.output_stream.write("<parameterList>\n")
+        self.jacktokenizer.advance()
+        self.output_stream.write("</parameterList>\n")
+        pass
+
+    def compile_subroutineBody(self):
+        """ I added this so this is not need the open statements"""
+        self.jacktokenizer.advance()
         pass
 
     def compile_var_dec(self) -> None:
         """Compiles a var declaration."""
         # Your code goes here!
-        pass
+        self.output_stream.write("<varDec>\n")
+        self.jacktokenizer.advance()
+        self.output_stream.write("</varDec>\n")
 
     def compile_statements(self) -> None:
         """Compiles a sequence of statements, not including the enclosing 
@@ -86,6 +159,7 @@ class CompilationEngine:
     def compile_if(self) -> None:
         """Compiles a if statement, possibly with a trailing else clause."""
         # Your code goes here!
+
         pass
 
     def compile_expression(self) -> None:
@@ -110,3 +184,31 @@ class CompilationEngine:
         """Compiles a (possibly empty) comma-separated list of expressions."""
         # Your code goes here!
         pass
+
+    def write_keyword(self):
+        self.output_stream.write("<keyword>" +
+                                 self.jacktokenizer.keyword() + " </keyword>\n")
+
+    def write_identifier(self):
+        self.output_stream.write("<identifier>" +
+                                 self.jacktokenizer.identifier() + " </identifier>\n")
+
+    def write_symbol(self):
+        self.output_stream.write("<symbol>" +
+                                 self.jacktokenizer.symbol() + " </symbol>\n")
+
+    def write_integerConstant(self):
+        self.output_stream.write("<integerConstant>" +
+                                 self.jacktokenizer.int_val() + " </integerConstant>\n")
+
+    def write_stringConstant(self):
+        self.output_stream.write("<stringConstant>" +
+                                 self.jacktokenizer.string_val() + " </stringConstant>\n")
+
+    def write_type(self):
+        if self.jacktokenizer.token_type() == "IDENTIFIER":
+            self.write_identifier()
+        else:
+            self.write_keyword()
+
+
