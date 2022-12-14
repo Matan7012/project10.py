@@ -10,6 +10,8 @@ import re
 
 SYMBOLS = {'{' , '}' , '(' , ')' , '[' , ']' , '.' , ',' , ';' , '+' ,
               '-' , '*' , '/' , '&' , '|' , '<' , '>' , '=' , '~' , '^' , '#'}
+SYMBOL_REGEX = '{|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|\/|&|\||<|>|=|~|\^|#'
+KEYWORD_REGEX = 'class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return'
 
 class JackTokenizer:
     """Removes all comments from the input stream and breaks it
@@ -44,7 +46,7 @@ class JackTokenizer:
               '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' | '^' | '#'
     - integerConstant: A decimal number in the range 0-32767.
     - StringConstant: '"' A sequence of Unicode characters not including 
-                      double quote or newline '"'
+                      double quote or newline '"' "sdasdsadas"
     - identifier: A sequence of letters, digits, and underscore ('_') not 
                   starting with a digit. You can assume keywords cannot be
                   identifiers, so 'self' cannot be an identifier, etc'.
@@ -95,6 +97,7 @@ class JackTokenizer:
     Note that ^, # correspond to shiftleft and shiftright, respectively.
     """
 
+
     def __init__(self, input_stream: typing.TextIO) -> None:
         """Opens the input stream and gets ready to tokenize it.
 
@@ -109,7 +112,8 @@ class JackTokenizer:
         # and removes the empty lines with a newline.
         self.input_lines = input_str.splitlines(input_str_clean)
         self.i = 0
-
+        self.token_type_str = None
+        self.word = None
         pass
 
     def has_more_tokens(self) -> bool:
@@ -128,10 +132,41 @@ class JackTokenizer:
         This method should be called if has_more_tokens() is true. 
         Initially there is no current token.
         """
-        self.input_lines[self.i] = re.sub("^\s*","",self.input_lines[self.i])
+        self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
         if self.input_lines[self.i] == '':
             self.i += 1
+
+        # Handaling symbols
+        if self.input_lines[self.i][0] in SYMBOLS:
+            self.token_type_str = "SYMBOL"
+            self.word = self.input_lines[self.i][0]
+            self.input_lines[self.i] = self.input_lines[self.i][1:]
+            return
+
+        # Handaling keywords
+        find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
+        keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
+        keyword_bool = not (keyword_at_start is None)
+        if keyword_bool:
+            self.set_according_to_regex("KEYWORD", keyword_at_start.group(0).upper(), keyword_at_start)
+            return
+
+        find_numbers_at_start_regex = r'^(' + '[0-9]+' + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
+        number_at_start = re.search(find_numbers_at_start_regex, self.input_lines[self.i])
+        number_bool = not (number_at_start is None)
+        if number_bool:
+            self.set_according_to_regex("INT_CONST", keyword_at_start.group(0), number_at_start)
+            return
+        find_double_quotes_regex = '^(")(.+)(")'
+        quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
+        quote_bool = not (quotes_at_start is None)
+        if str_
+
         # Your code goes here!
+    def set_according_to_regex(self, token_type_string, word_string, start_regex):
+        self.token_type_str = token_type_string
+        self.word = word_string
+        self.input_lines[self.i] = re.sub(start_regex, '', self.input_lines[self.i])
 
     def token_type(self) -> str:
         """
@@ -139,10 +174,19 @@ class JackTokenizer:
             str: the type of the current token, can be
             "KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"
         """
+
         # Your code goes here!
         if self.input_lines[self.i][0] in SYMBOLS:
             return "SYMBOL"
-        x = re.search('^()')
+        find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
+        keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
+        keyword_bool = not (keyword_at_start is None)
+        if keyword_bool:
+            return "KEYWORD"
+
+
+
+        '^(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)(?=({|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|\/|&|\||<|>|=|~|\^|#|\s+))'
         pass
 
     def keyword(self) -> str:
@@ -154,8 +198,9 @@ class JackTokenizer:
             "BOOLEAN", "CHAR", "VOID", "VAR", "STATIC", "FIELD", "LET", "DO", 
             "IF", "ELSE", "WHILE", "RETURN", "TRUE", "FALSE", "NULL", "THIS"
         """
-        # Your code goes here!
-        pass
+        find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
+        keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
+        return keyword_at_start.group(0).upper()
 
     def symbol(self) -> str:
         """
@@ -167,7 +212,7 @@ class JackTokenizer:
               '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' | '^' | '#'
         """
         # Your code goes here!
-        pass
+        return self.input_lines[self.i][0]
 
     def identifier(self) -> str:
         """
