@@ -33,13 +33,8 @@ class CompilationEngine:
         self.output_stream.write("<class>\n")
 
         self.write_keyword()
-        self.jacktokenizer.advance()
-
         self.write_identifier()
-        self.jacktokenizer.advance()
-
         self.write_symbol()
-        self.jacktokenizer.advance()
         while self.jacktokenizer.keyword() == "STATIC" or self.jacktokenizer.keyWord() == "FIELD":
             self.compile_class_var_dec()
         while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyWord() == "FUNCTION" \
@@ -47,7 +42,6 @@ class CompilationEngine:
             self.compile_subroutine()
 
         self.write_symbol()
-        self.jacktokenizer.advance()
 
         self.output_stream.write("</class>\n")
 
@@ -56,20 +50,14 @@ class CompilationEngine:
         self.output_stream.write("<classVarDec>\n")
 
         self.write_keyword()
-        self.jacktokenizer.advance()
         self.write_type()
-        self.jacktokenizer.advance()
         self.write_identifier()
-        self.jacktokenizer.advance()
 
         while self.jacktokenizer.symbol() != ";":
             self.write_symbol()
-            self.jacktokenizer.advance()
             self.write_identifier()
-            self.jacktokenizer.advance()
 
         self.write_symbol()
-        self.jacktokenizer.advance()
 
         self.output_stream.write("</classVarDec>\n")
 
@@ -82,24 +70,18 @@ class CompilationEngine:
         self.output_stream.write("<subroutineDec>\n")
 
         self.write_keyword()
-        self.jacktokenizer.advance()
         if self.jacktokenizer.keyword() == "VOID":
             self.write_keyword()
-            self.jacktokenizer.advance()
         else:
             self.write_type()
-            self.jacktokenizer.advance()
 
         self.write_identifier()
-        self.jacktokenizer.advance()
 
         self.write_symbol()
-        self.jacktokenizer.advance()
 
         self.compile_parameter_list()
 
         self.write_symbol()
-        self.jacktokenizer.advance()
 
         self.compile_subroutineBody()
 
@@ -113,18 +95,13 @@ class CompilationEngine:
 
         if self.jacktokenizer.token_type() == "KEYWORD":
             self.write_type()
-            self.jacktokenizer.advance()
 
             self.write_identifier()
-            self.jacktokenizer.advance()
 
             while self.jacktokenizer.symbol() != ")":
                 self.write_symbol()
-                self.jacktokenizer.advance()
                 self.write_type()
-                self.jacktokenizer.advance()
                 self.write_identifier()
-                self.jacktokenizer.advance()
 
         self.output_stream.write("</parameterList>\n")
 
@@ -133,7 +110,6 @@ class CompilationEngine:
         self.output_stream.write("<subroutineBody>\n")
 
         self.write_symbol()
-        self.jacktokenizer.advance()
 
         while self.jacktokenizer.keyword == "VOID":
             self.compile_var_dec()
@@ -141,11 +117,8 @@ class CompilationEngine:
         self.compile_statements()
 
         self.write_symbol()
-        self.jacktokenizer.advance()
 
         self.output_stream.write("</subroutineBody>\n")
-
-
 
     def compile_var_dec(self) -> None:
         """Compiles a var declaration."""
@@ -153,21 +126,15 @@ class CompilationEngine:
         self.output_stream.write("<varDec>\n")
 
         self.write_keyword()
-        self.jacktokenizer.advance()
 
         self.write_type()
-        self.jacktokenizer.advance()
 
         self.write_identifier()
-        self.jacktokenizer.advance()
         while self.jacktokenizer.symbol() != ";":
             self.write_symbol()
-            self.jacktokenizer.advance()
             self.write_identifier()
-            self.jacktokenizer.advance()
 
         self.write_symbol()
-        self.jacktokenizer.advance()
         self.output_stream.write("</varDec>\n")
 
     def compile_statements(self) -> None:
@@ -175,34 +142,87 @@ class CompilationEngine:
         "{}".
         """
 
-        # Your code goes here!
-        pass
+        self.output_stream.write("<statements>\n")
+        while self.jacktokenizer.token_type() == "KEYWORD":
+            if self.jacktokenizer.keyword() == "LET":
+                self.compile_let()
+            elif self.jacktokenizer.keyword() == "IF":
+                self.compile_if()
+            elif self.jacktokenizer.keyword() == "WHILE":
+                self.compile_while()
+            elif self.jacktokenizer.keyword() == "DO":
+                self.compile_do()
+            elif self.jacktokenizer.keyword() == "RETURN":
+                self.compile_return()
+
+        self.output_stream.write("</statements>\n")
 
     def compile_do(self) -> None:
         """Compiles a do statement."""
-        # Your code goes here!
-        pass
+        self.output_stream.write("<doStatement>\n")
+
+        self.write_keyword()
+
+        self.compile_subroutineCall()
+
+        self.write_symbol()
+        self.output_stream.write("</doStatement>\n")
+
+    def compile_subroutineCall(self):
+        """ Compiles a subroutineCall ???????"""
+        self.write_identifier()
+
+        self.write_symbol()
+
+        self.compile_expression()
+
+        self.write_symbol()
 
     def compile_let(self) -> None:
         """Compiles a let statement."""
         # Your code goes here!
-        pass
+        self.output_stream.write("<letStatement>\n")
+        self.write_keyword()
+
+        self.write_identifier()
+        if self.jacktokenizer.symbol() == "[":
+            self.write_symbol()
+
+            self.compile_expression()
+
+            self.write_symbol()
+
+        self.write_symbol()
+
+        self.compile_expression()
+
+        self.write_symbol()
+
+        self.output_stream.write("</letStatement>\n")
 
     def compile_while(self) -> None:
         """Compiles a while statement."""
         # Your code goes here!
-        pass
+        self.output_stream.write("<whileStatement>\n")
+
+        self.write_keyword()
+
+        self.write_symbol()
+
+        self.output_stream.write("</whileStatement>\n")
 
     def compile_return(self) -> None:
         """Compiles a return statement."""
         # Your code goes here!
-        pass
+        self.output_stream.write("<returnStatement>\n")
+        self.output_stream.write("</returnStatement>\n")
 
     def compile_if(self) -> None:
         """Compiles a if statement, possibly with a trailing else clause."""
         # Your code goes here!
 
-        pass
+        self.output_stream.write("<ifStatement>\n")
+        self.output_stream.write("</ifStatement>\n")
 
     def compile_expression(self) -> None:
         """Compiles an expression."""
@@ -227,28 +247,35 @@ class CompilationEngine:
         # Your code goes here!
         pass
 
+    # the most elementary functions
     def write_keyword(self):
         self.output_stream.write("<keyword>" +
                                  self.jacktokenizer.keyword() + " </keyword>\n")
+        self.jacktokenizer.advance()
 
     def write_identifier(self):
         self.output_stream.write("<identifier>" +
                                  self.jacktokenizer.identifier() + " </identifier>\n")
+        self.jacktokenizer.advance()
 
     def write_symbol(self):
         self.output_stream.write("<symbol>" +
                                  self.jacktokenizer.symbol() + " </symbol>\n")
+        self.jacktokenizer.advance()
 
     def write_integerConstant(self):
         self.output_stream.write("<integerConstant>" +
                                  self.jacktokenizer.int_val() + " </integerConstant>\n")
+        self.jacktokenizer.advance()
 
     def write_stringConstant(self):
         self.output_stream.write("<stringConstant>" +
                                  self.jacktokenizer.string_val() + " </stringConstant>\n")
+        self.jacktokenizer.advance()
 
     def write_type(self):
         if self.jacktokenizer.token_type() == "IDENTIFIER":
             self.write_identifier()
         else:
             self.write_keyword()
+        self.jacktokenizer.advance()
