@@ -31,7 +31,6 @@ class CompilationEngine:
     def compile_class(self) -> None:
         """Compiles a complete class."""
         self.output_stream.write("<class>\n")
-        self.jacktokenizer.advance()
 
         self.write_keyword()
         self.jacktokenizer.advance()
@@ -55,7 +54,6 @@ class CompilationEngine:
     def compile_class_var_dec(self) -> None:
         """Compiles a static declaration or a field declaration."""
         self.output_stream.write("<classVarDec>\n")
-        self.jacktokenizer.advance()
 
         self.write_keyword()
         self.jacktokenizer.advance()
@@ -72,6 +70,7 @@ class CompilationEngine:
 
         self.write_symbol()
         self.jacktokenizer.advance()
+
         self.output_stream.write("</classVarDec>\n")
 
     def compile_subroutine(self) -> None:
@@ -81,7 +80,6 @@ class CompilationEngine:
         you will understand why this is necessary in project 11.
         """
         self.output_stream.write("<subroutineDec>\n")
-        self.jacktokenizer.advance()
 
         self.write_keyword()
         self.jacktokenizer.advance()
@@ -104,7 +102,6 @@ class CompilationEngine:
         self.jacktokenizer.advance()
 
         self.compile_subroutineBody()
-        self.jacktokenizer.advance()
 
         self.output_stream.write("</subroutineDec>\n")
 
@@ -113,7 +110,7 @@ class CompilationEngine:
         enclosing "()".
         """
         self.output_stream.write("<parameterList>\n")
-        self.jacktokenizer.advance()
+
         if self.jacktokenizer.token_type() == "KEYWORD":
             self.write_type()
             self.jacktokenizer.advance()
@@ -129,33 +126,32 @@ class CompilationEngine:
                 self.write_identifier()
                 self.jacktokenizer.advance()
 
-        self.jacktokenizer.advance()
         self.output_stream.write("</parameterList>\n")
 
     def compile_subroutineBody(self):
         """ I added this so this is not need the open statements"""
         self.output_stream.write("<subroutineBody>\n")
-        self.jacktokenizer.advance()
 
         self.write_symbol()
         self.jacktokenizer.advance()
 
-        while self.jacktokenizer.symbol() != ";":
+        while self.jacktokenizer.keyword == "VOID":
             self.compile_var_dec()
 
-
-
+        self.compile_statements()
 
         self.write_symbol()
         self.jacktokenizer.advance()
+
         self.output_stream.write("</subroutineBody>\n")
 
-        pass
+
 
     def compile_var_dec(self) -> None:
         """Compiles a var declaration."""
         # Your code goes here!
         self.output_stream.write("<varDec>\n")
+
         self.write_keyword()
         self.jacktokenizer.advance()
 
@@ -178,6 +174,7 @@ class CompilationEngine:
         """Compiles a sequence of statements, not including the enclosing 
         "{}".
         """
+
         # Your code goes here!
         pass
 
