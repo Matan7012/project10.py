@@ -255,19 +255,65 @@ class CompilationEngine:
         part of this term and should not be advanced over.
         """
         # Your code goes here!
-        pass
+        if self.jacktokenizer.token_type() == "INT_CONST":
+            self.write_integerConstant()
+        elif self.jacktokenizer.token_type() == "STRING_CONST":
+            self.write_stringConstant()
+        elif self.jacktokenizer.token_type() == "KEYWORD":
+            self.write_keyword()
+        elif self.jacktokenizer.token_type() == "SYMBOL":
+            if self.jacktokenizer.symbol() == "(":
+                self.write_symbol()
+                self.compile_expression()
+                self.write_symbol()
+            elif self.jacktokenizer.symbol() in ['-', '~']:
+                self.write_symbol()
+                self.compile_term()  # recursive?
+        elif self.jacktokenizer.token_type() == "IDENTIFIER":
+            self.write_identifier()
+            if self.jacktokenizer.symbol()=="[":
+                self.write_symbol()
+                self.compile_expression()
+                self.write_symbol()
+            elif self.jacktokenizer.symbol() == "(":
+                self.write_symbol()
+                self.compile_expression_list()
+                self.write_symbol()
+            elif self.jacktokenizer.symbol() == ".":
+                self.write_symbol()
+                self.write_identifier()
+                self.write_symbol()
+                self.compile_expression_list()
+                self.write_symbol()
 
     def compile_subroutineCall(self):
-        """ Compiles a subroutineCall ???????"""
+        """ Compiles a subroutineCall"""
+
         self.write_identifier()
-        self.write_symbol()
-        self.compile_expression()
-        self.write_symbol()
+        if self.jacktokenizer.symbol() == "(":
+            self.write_symbol()
+            self.compile_expression_list()
+            self.write_symbol()
+        else:
+            self.write_symbol()
+            self.write_identifier()
+            self.write_symbol()
+            self.compile_expression_list()
+            self.write_symbol()
 
     def compile_expression_list(self) -> None:
         """Compiles a (possibly empty) comma-separated list of expressions."""
         # Your code goes here!
-        pass
+        if self.jacktokenizer.token_type() != "SYMBOL":
+            self.compile_expression()
+            while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
+                self.write_symbol()
+                self.compile_expression()
+        elif self.jacktokenizer.symbol() in ["(", "-", "~"]:
+            self.compile_expression()
+            while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
+                self.write_symbol()
+                self.compile_expression()
 
     # the most elementary functions
     def write_keyword(self):
