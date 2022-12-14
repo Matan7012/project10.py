@@ -155,13 +155,21 @@ class JackTokenizer:
         number_at_start = re.search(find_numbers_at_start_regex, self.input_lines[self.i])
         number_bool = not (number_at_start is None)
         if number_bool:
-            self.set_according_to_regex("INT_CONST", keyword_at_start.group(0), number_at_start)
+            self.set_according_to_regex("INT_CONST", number_at_start.group(0), number_at_start)
             return
-        find_double_quotes_regex = '^(")(.+)(")'
+        find_double_quotes_regex = '^(")(.+)(")/U'
         quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
         quote_bool = not (quotes_at_start is None)
-        if str_
+        if quote_bool:
+            self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], quotes_at_start)
 
+        find_Identifier_regex = '^([A-z]|_|[0-9])+'
+        Identifier_at_start = re.search(find_Identifier_regex, self.input_lines[self.i])
+        Identifier_bool = not (Identifier_at_start is None)
+        if Identifier_bool:
+            self.set_according_to_regex("STRING_CONST", find_Identifier_regex.group(0), find_Identifier_regex)
+
+        return Exception()
         # Your code goes here!
     def set_according_to_regex(self, token_type_string, word_string, start_regex):
         self.token_type_str = token_type_string
@@ -175,19 +183,7 @@ class JackTokenizer:
             "KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"
         """
 
-        # Your code goes here!
-        if self.input_lines[self.i][0] in SYMBOLS:
-            return "SYMBOL"
-        find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
-        keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
-        keyword_bool = not (keyword_at_start is None)
-        if keyword_bool:
-            return "KEYWORD"
-
-
-
-        '^(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)(?=({|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|\/|&|\||<|>|=|~|\^|#|\s+))'
-        pass
+        return self.token_type_str
 
     def keyword(self) -> str:
         """
@@ -198,9 +194,7 @@ class JackTokenizer:
             "BOOLEAN", "CHAR", "VOID", "VAR", "STATIC", "FIELD", "LET", "DO", 
             "IF", "ELSE", "WHILE", "RETURN", "TRUE", "FALSE", "NULL", "THIS"
         """
-        find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
-        keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
-        return keyword_at_start.group(0).upper()
+        return self.word
 
     def symbol(self) -> str:
         """
@@ -212,7 +206,7 @@ class JackTokenizer:
               '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' | '^' | '#'
         """
         # Your code goes here!
-        return self.input_lines[self.i][0]
+        return self.word
 
     def identifier(self) -> str:
         """
@@ -225,7 +219,7 @@ class JackTokenizer:
                   identifiers, so 'self' cannot be an identifier, etc'.
         """
         # Your code goes here!
-        pass
+        return self.word
 
     def int_val(self) -> int:
         """
@@ -236,7 +230,7 @@ class JackTokenizer:
             integerConstant: A decimal number in the range 0-32767.
         """
         # Your code goes here!
-        pass
+        return self.word
 
     def string_val(self) -> str:
         """
@@ -248,4 +242,4 @@ class JackTokenizer:
                       double quote or newline '"'
         """
         # Your code goes here!
-        pass
+        return self.word
