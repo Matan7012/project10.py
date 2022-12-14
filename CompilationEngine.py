@@ -168,34 +168,19 @@ class CompilationEngine:
         self.write_symbol()
         self.output_stream.write("</doStatement>\n")
 
-    def compile_subroutineCall(self):
-        """ Compiles a subroutineCall ???????"""
-        self.write_identifier()
-
-        self.write_symbol()
-
-        self.compile_expression()
-
-        self.write_symbol()
-
     def compile_let(self) -> None:
         """Compiles a let statement."""
         # Your code goes here!
         self.output_stream.write("<letStatement>\n")
         self.write_keyword()
-
         self.write_identifier()
         if self.jacktokenizer.symbol() == "[":
             self.write_symbol()
-
             self.compile_expression()
-
             self.write_symbol()
 
         self.write_symbol()
-
         self.compile_expression()
-
         self.write_symbol()
 
         self.output_stream.write("</letStatement>\n")
@@ -206,15 +191,24 @@ class CompilationEngine:
         self.output_stream.write("<whileStatement>\n")
 
         self.write_keyword()
-
+        self.write_symbol()
+        self.compile_expression()
+        self.write_symbol()
+        self.write_symbol()
+        self.compile_statements()
         self.write_symbol()
 
         self.output_stream.write("</whileStatement>\n")
 
     def compile_return(self) -> None:
         """Compiles a return statement."""
-        # Your code goes here!
         self.output_stream.write("<returnStatement>\n")
+        self.write_keyword()
+        if self.jacktokenizer.token_type() != "SYMBOL":
+            self.compile_expression()
+        elif self.jacktokenizer.symbol() in ["(", "-", "~"]:
+            self.compile_expression()
+        self.write_symbol()
         self.output_stream.write("</returnStatement>\n")
 
     def compile_if(self) -> None:
@@ -222,12 +216,33 @@ class CompilationEngine:
         # Your code goes here!
 
         self.output_stream.write("<ifStatement>\n")
+        self.write_keyword()
+        self.write_symbol()
+        self.compile_expression()
+        self.write_symbol()
+        self.write_symbol()
+        self.compile_statements()
+        self.write_symbol()
+
+        if self.jacktokenizer.keyword() == "ELSE":
+            self.write_keyword()
+            self.write_symbol()
+            self.compile_statements()
+            self.write_symbol()
+
         self.output_stream.write("</ifStatement>\n")
 
     def compile_expression(self) -> None:
         """Compiles an expression."""
-        # Your code goes here!
-        pass
+        self.output_stream.write("<expression>\n")
+
+        self.compile_term()
+        op = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+        while (self.jacktokenizer.token_type() == "SYMBOL") and \
+                (self.jacktokenizer.symbol() in op):
+            self.write_symbol()
+            self.compile_term()
+        self.output_stream.write("</expression>\n")
 
     def compile_term(self) -> None:
         """Compiles a term. 
@@ -241,6 +256,13 @@ class CompilationEngine:
         """
         # Your code goes here!
         pass
+
+    def compile_subroutineCall(self):
+        """ Compiles a subroutineCall ???????"""
+        self.write_identifier()
+        self.write_symbol()
+        self.compile_expression()
+        self.write_symbol()
 
     def compile_expression_list(self) -> None:
         """Compiles a (possibly empty) comma-separated list of expressions."""
