@@ -104,6 +104,7 @@ class CompilationEngine:
         self.jacktokenizer.advance()
 
         self.compile_subroutineBody()
+        self.jacktokenizer.advance()
 
         self.output_stream.write("</subroutineDec>\n")
 
@@ -111,21 +112,65 @@ class CompilationEngine:
         """Compiles a (possibly empty) parameter list, not including the 
         enclosing "()".
         """
-        # Your code goes here!
         self.output_stream.write("<parameterList>\n")
         self.jacktokenizer.advance()
+        if self.jacktokenizer.token_type() == "KEYWORD":
+            self.write_type()
+            self.jacktokenizer.advance()
+
+            self.write_identifier()
+            self.jacktokenizer.advance()
+
+            while self.jacktokenizer.symbol() != ")":
+                self.write_symbol()
+                self.jacktokenizer.advance()
+                self.write_type()
+                self.jacktokenizer.advance()
+                self.write_identifier()
+                self.jacktokenizer.advance()
+
+        self.jacktokenizer.advance()
         self.output_stream.write("</parameterList>\n")
-        pass
 
     def compile_subroutineBody(self):
         """ I added this so this is not need the open statements"""
+        self.output_stream.write("<subroutineBody>\n")
         self.jacktokenizer.advance()
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+
+        while self.jacktokenizer.symbol() != ";":
+            self.compile_var_dec()
+
+
+
+
+        self.write_symbol()
+        self.jacktokenizer.advance()
+        self.output_stream.write("</subroutineBody>\n")
+
         pass
 
     def compile_var_dec(self) -> None:
         """Compiles a var declaration."""
         # Your code goes here!
         self.output_stream.write("<varDec>\n")
+        self.write_keyword()
+        self.jacktokenizer.advance()
+
+        self.write_type()
+        self.jacktokenizer.advance()
+
+        self.write_identifier()
+        self.jacktokenizer.advance()
+        while self.jacktokenizer.symbol() != ";":
+            self.write_symbol()
+            self.jacktokenizer.advance()
+            self.write_identifier()
+            self.jacktokenizer.advance()
+
+        self.write_symbol()
         self.jacktokenizer.advance()
         self.output_stream.write("</varDec>\n")
 
@@ -210,5 +255,3 @@ class CompilationEngine:
             self.write_identifier()
         else:
             self.write_keyword()
-
-
