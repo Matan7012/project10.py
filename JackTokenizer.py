@@ -114,6 +114,7 @@ class JackTokenizer:
         self.i = 0
         self.token_type_str = None
         self.word = None
+        self.advance()
         pass
 
     def has_more_tokens(self) -> bool:

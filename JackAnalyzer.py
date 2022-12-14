@@ -23,7 +23,8 @@ def analyze_file(
     # It might be good to start by creating a new JackTokenizer and CompilationEngine:
     tokenizer = JackTokenizer(input_file)
     engine = CompilationEngine(tokenizer, output_file)
-    pass
+    while tokenizer.has_more_tokens():
+        engine(tokenizer, output_file)
 
 
 if "__main__" == __name__:
