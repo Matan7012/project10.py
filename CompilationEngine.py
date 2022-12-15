@@ -25,9 +25,21 @@ class CompilationEngine:
         # Note that you can write to output_stream like so:
         self.output_stream = output_stream
         self.jacktokenizer = input_stream
+        self.classnames = []
         # output_stream.write("Hello world! \n")
-        pass
-
+        while self.jacktokenizer.has_more_tokens():
+            token_type = self.jacktokenizer.token_type()
+            if token_type == "KEYWORD":
+                keyword = self.jacktokenizer.keyword()
+                if keyword == 'CLASS':
+                    self.compile_class()
+                elif keyword == 'STATIC' or 'FIELD':
+                    self.compile_class_var_dec()
+                elif keyword in ['CONSTRUCTOR','FUNCTION','METHOD']:
+                    self.compile_subroutine()
+                elif keyword == 'VAR':
+                    self.compile_var_dec()
+            self.jacktokenizer.advance()
     def compile_class(self) -> None:
         """Compiles a complete class."""
         self.output_stream.write("<class>\n")
@@ -35,10 +47,10 @@ class CompilationEngine:
         self.write_keyword()
         self.write_identifier()
         self.write_symbol()
-        while self.jacktokenizer.keyword() == "STATIC" or self.jacktokenizer.keyWord() == "FIELD":
+        while self.jacktokenizer.keyword() == "STATIC" or self.jacktokenizer.keyword() == "FIELD":
             self.compile_class_var_dec()
-        while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyWord() == "FUNCTION" \
-                or self.jacktokenizer.keyWord() == "METHOD":
+        while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyword() == "FUNCTION" \
+                or self.jacktokenizer.keyword() == "METHOD":
             self.compile_subroutine()
 
         self.write_symbol()
