@@ -206,7 +206,7 @@ class CompilationEngine:
         self.write_keyword()
         if self.jacktokenizer.token_type() != "SYMBOL":
             self.compile_expression()
-        elif self.jacktokenizer.symbol() in ["(", "-", "~"]:
+        elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
             self.compile_expression()
         self.write_symbol()
         self.output_stream.write("</returnStatement>\n")
@@ -266,12 +266,12 @@ class CompilationEngine:
                 self.write_symbol()
                 self.compile_expression()
                 self.write_symbol()
-            elif self.jacktokenizer.symbol() in ['-', '~']:
+            elif self.jacktokenizer.symbol() in ['-', '~','^', '#']:
                 self.write_symbol()
                 self.compile_term()  # recursive?
         elif self.jacktokenizer.token_type() == "IDENTIFIER":
             self.write_identifier()
-            if self.jacktokenizer.symbol()=="[":
+            if self.jacktokenizer.symbol() == "[":
                 self.write_symbol()
                 self.compile_expression()
                 self.write_symbol()
@@ -309,7 +309,7 @@ class CompilationEngine:
             while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
                 self.write_symbol()
                 self.compile_expression()
-        elif self.jacktokenizer.symbol() in ["(", "-", "~"]:
+        elif self.jacktokenizer.symbol() in ["(", "-", "~",'^', '#']:
             self.compile_expression()
             while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
                 self.write_symbol()
