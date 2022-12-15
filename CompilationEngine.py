@@ -65,7 +65,7 @@ class CompilationEngine:
         self.write_type()
         self.write_identifier()
 
-        while self.jacktokenizer.symbol() != ";":
+        while self.jacktokenizer.symbol() != ";": #PROBLEMATIC WHILE - THE CODE GETS STUCK
             self.write_symbol()
             self.write_identifier()
 
@@ -330,27 +330,27 @@ class CompilationEngine:
     # the most elementary functions
     def write_keyword(self):
         self.output_stream.write("<keyword>" +
-                                 self.jacktokenizer.keyword() + " </keyword>\n")
+                                 self.jacktokenizer.keyword() + "</keyword>\n")
         self.jacktokenizer.advance()
 
     def write_identifier(self):
         self.output_stream.write("<identifier>" +
-                                 self.jacktokenizer.identifier() + " </identifier>\n")
+                                 self.jacktokenizer.identifier() + "</identifier>\n")
         self.jacktokenizer.advance()
 
     def write_symbol(self):
         self.output_stream.write("<symbol>" +
-                                 self.jacktokenizer.symbol() + " </symbol>\n")
+                                 self.jacktokenizer.symbol() + "</symbol>\n")
         self.jacktokenizer.advance()
 
     def write_integerConstant(self):
         self.output_stream.write("<integerConstant>" +
-                                 self.jacktokenizer.int_val() + " </integerConstant>\n")
+                                 self.jacktokenizer.int_val() + "</integerConstant>\n")
         self.jacktokenizer.advance()
 
     def write_stringConstant(self):
         self.output_stream.write("<stringConstant>" +
-                                 self.jacktokenizer.string_val() + " </stringConstant>\n")
+                                 self.jacktokenizer.string_val() + "</stringConstant>\n")
         self.jacktokenizer.advance()
 
     def write_type(self):
