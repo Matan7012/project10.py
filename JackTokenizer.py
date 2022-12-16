@@ -124,10 +124,9 @@ class JackTokenizer:
             bool: True if there are more tokens, False otherwise.
         """
         if self.i < (len(self.input_lines)-1) or self.input_lines[self.i] != '':
-            print(self.i)
-            print(len(self.input_lines))
+            #print(self.i)
+            #print(len(self.input_lines))
             return True
-        # Your code goes here!
         return False
 
     def advance(self) -> None:

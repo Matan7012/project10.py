@@ -35,11 +35,13 @@ class CompilationEngine:
                     self.compile_class()
                 elif keyword == 'STATIC' or 'FIELD':
                     self.compile_class_var_dec()
-                elif keyword in ['CONSTRUCTOR','FUNCTION','METHOD']:
+                elif keyword in ['CONSTRUCTOR', 'FUNCTION', 'METHOD']:
                     self.compile_subroutine()
                 elif keyword == 'VAR':
                     self.compile_var_dec()
-            self.jacktokenizer.advance()
+            print(self.jacktokenizer.has_more_tokens())
+            self.jacktokenizer.advance() #MAYBE WITHOUT THIS
+
     def compile_class(self) -> None:
         """Compiles a complete class."""
         self.output_stream.write("<class>\n")
@@ -65,7 +67,8 @@ class CompilationEngine:
         self.write_type()
         self.write_identifier()
 
-        while self.jacktokenizer.symbol() != ";": #PROBLEMATIC WHILE - THE CODE GETS STUCK
+        while self.jacktokenizer.symbol() == ",":  # PROBLEMATIC WHILE - THE CODE GETS STUCK
+            print(self.jacktokenizer.symbol())
             self.write_symbol()
             self.write_identifier()
 
@@ -278,7 +281,7 @@ class CompilationEngine:
                 self.write_symbol()
                 self.compile_expression()
                 self.write_symbol()
-            elif self.jacktokenizer.symbol() in ['-', '~','^', '#']:
+            elif self.jacktokenizer.symbol() in ['-', '~', '^', '#']:
                 self.write_symbol()
                 self.compile_term()  # recursive?
         elif self.jacktokenizer.token_type() == "IDENTIFIER":
@@ -321,7 +324,7 @@ class CompilationEngine:
             while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
                 self.write_symbol()
                 self.compile_expression()
-        elif self.jacktokenizer.symbol() in ["(", "-", "~",'^', '#']:
+        elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
             self.compile_expression()
             while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
                 self.write_symbol()
