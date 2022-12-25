@@ -276,7 +276,6 @@ class CompilationEngine:
         # Your code goes here!
         self.output_stream.write("<term>\n")
 
-        print("MATAN!",self.jacktokenizer.token_type())
         if self.jacktokenizer.token_type() == "INT_CONST":
             self.write_integerConstant()
         elif self.jacktokenizer.token_type() == "STRING_CONST":
@@ -315,6 +314,7 @@ class CompilationEngine:
         """ Compiles a subroutineCall"""
 
         self.write_identifier()
+
         if self.jacktokenizer.symbol() == "(":
             self.write_symbol()
             self.compile_expression_list()
@@ -327,18 +327,21 @@ class CompilationEngine:
             self.write_symbol()
 
     def compile_expression_list(self) -> None:
+
         """Compiles a (possibly empty) comma-separated list of expressions."""
         # Your code goes here!
-        if self.jacktokenizer.token_type() != "SYMBOL":
+        if self.jacktokenizer.token_type() == "SYMBOL" and self.jacktokenizer.symbol() == ")":
+            return
+        # if self.jacktokenizer.token_type() != "SYMBOL" or self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
+        self.compile_expression()
+        while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
+            self.write_symbol()
             self.compile_expression()
-            while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
-                self.write_symbol()
-                self.compile_expression()
-        elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
-            self.compile_expression()
-            while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
-                self.write_symbol()
-                self.compile_expression()
+        # elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
+        #     self.compile_expression()
+        #     while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
+        #         self.write_symbol()
+        #         self.compile_expression()
 
     # the most elementary functions
     def write_keyword(self):
