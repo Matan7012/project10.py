@@ -39,8 +39,6 @@ class CompilationEngine:
                     self.compile_subroutine()
                 elif keyword == 'VAR':
                     self.compile_var_dec()
-                elif keyword in ["LET","IF","WHILE","DO","RETURN"]:
-                    self.compile_statements()
             print(self.jacktokenizer.has_more_tokens())
             self.jacktokenizer.advance() #MAYBE WITHOUT THIS
 

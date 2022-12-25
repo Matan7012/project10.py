@@ -109,8 +109,11 @@ class JackTokenizer:
         input_str = input_stream.read()
         input_str_no_comments = re.sub("\/\*[\s\S]*?\*\/|\/\/.*|\/\*\*[\s\S]*?\*\/",'',input_str) #replaces all the comments with empty space.
         input_str_clean = re.sub("(^\s*\n)|(\s+$)(^\s*\n)|(\s+$)/m","",input_str_no_comments) #removes the white spaces at the end of line
+        input_str_final = re.sub("(\n\s*)+", "\n", input_str_clean)
         # and removes the empty lines with a newline.
-        self.input_lines = input_str_clean.splitlines()
+        for idx,line in enumerate(input_str_final.split("\n")):
+            print(idx,line)
+        self.input_lines = input_str_final.splitlines()
         self.i = 0
         self.token_type_str = None
         self.word = None
@@ -123,6 +126,10 @@ class JackTokenizer:
         Returns:
             bool: True if there are more tokens, False otherwise.
         """
+        while self.input_lines[self.i] == '' and self.i < (len(self.input_lines)-1):
+            self.i += 1
+            self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
+
         if self.i < (len(self.input_lines)-1) or self.input_lines[self.i] != '':
             #print(self.i)
             #print(len(self.input_lines))
@@ -134,11 +141,15 @@ class JackTokenizer:
         This method should be called if has_more_tokens() is true. 
         Initially there is no current token.
         """
+
         self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
         while self.input_lines[self.i] == '':
             self.i += 1
             self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
 
+        print(self.i)
+        print(self.word)
+        print(self.input_lines[self.i], 'the input line')
         # Handaling symbols
         if self.input_lines[self.i][0] in SYMBOLS:
             self.token_type_str = "SYMBOL"
@@ -160,10 +171,11 @@ class JackTokenizer:
         if number_bool:
             self.set_according_to_regex("INT_CONST", number_at_start.group(0), find_numbers_at_start_regex)
             return
-        find_double_quotes_regex = '^(")(.+)(")/U'
+        find_double_quotes_regex = '^(")(.+)(")'
         quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
         quote_bool = not (quotes_at_start is None)
         if quote_bool:
+            print('fine b')
             self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
             return
         find_Identifier_regex = '^([A-z]|_|[0-9])+'
