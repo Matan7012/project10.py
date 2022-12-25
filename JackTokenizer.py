@@ -147,8 +147,8 @@ class JackTokenizer:
             self.i += 1
             self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
 
-        print(self.i)
-        print(self.word)
+        # print(self.i)
+        # print(self.word)
         print(self.input_lines[self.i], 'the input line')
         # Handaling symbols
         if self.input_lines[self.i][0] in SYMBOLS:
@@ -175,7 +175,6 @@ class JackTokenizer:
         quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
         quote_bool = not (quotes_at_start is None)
         if quote_bool:
-            print('fine b')
             self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
             return
         find_Identifier_regex = '^([A-z]|_|[0-9])+'

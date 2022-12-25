@@ -72,8 +72,7 @@ class CompilationEngine:
         self.write_type()
         self.write_identifier()
 
-        while self.jacktokenizer.symbol() == ",":  # PROBLEMATIC WHILE - THE CODE GETS STUCK
-            print(self.jacktokenizer.symbol())
+        while self.jacktokenizer.symbol() == ",":
             self.write_symbol()
             self.write_identifier()
 
@@ -292,7 +291,6 @@ class CompilationEngine:
                 self.compile_term()  # recursive?
         elif self.jacktokenizer.token_type() == "IDENTIFIER":
             self.write_identifier()
-            print("MATAN!")
             if self.jacktokenizer.symbol() == "[":
                 self.write_symbol()
                 self.compile_expression()
@@ -329,12 +327,12 @@ class CompilationEngine:
     def compile_expression_list(self) -> None:
 
         """Compiles a (possibly empty) comma-separated list of expressions."""
-        # Your code goes here!
+        self.output_stream.write("<expressionList>\n")
         if self.jacktokenizer.token_type() == "SYMBOL" and self.jacktokenizer.symbol() == ")":
             return
         # if self.jacktokenizer.token_type() != "SYMBOL" or self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
         self.compile_expression()
-        while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
+        while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol() == ","):
             self.write_symbol()
             self.compile_expression()
         # elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
@@ -342,31 +340,32 @@ class CompilationEngine:
         #     while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol == ","):
         #         self.write_symbol()
         #         self.compile_expression()
+        self.output_stream.write("</expressionList>\n")
 
     # the most elementary functions
     def write_keyword(self):
-        self.output_stream.write("<keyword>" +
-                                 self.jacktokenizer.keyword() + "</keyword>\n")
+        self.output_stream.write("<keyword> " +
+                                 self.jacktokenizer.keyword() + " </keyword>\n")
         self.jacktokenizer.advance()
 
     def write_identifier(self):
-        self.output_stream.write("<identifier>" +
-                                 self.jacktokenizer.identifier() + "</identifier>\n")
+        self.output_stream.write("<identifier> " +
+                                 self.jacktokenizer.identifier() + " </identifier>\n")
         self.jacktokenizer.advance()
 
     def write_symbol(self):
-        self.output_stream.write("<symbol>" +
-                                 self.jacktokenizer.symbol() + "</symbol>\n")
+        self.output_stream.write("<symbol> " +
+                                 self.jacktokenizer.symbol() + " </symbol>\n")
         self.jacktokenizer.advance()
 
     def write_integerConstant(self):
-        self.output_stream.write("<integerConstant>" +
-                                 self.jacktokenizer.int_val() + "</integerConstant>\n")
+        self.output_stream.write("<integerConstant> " +
+                                 self.jacktokenizer.int_val() + " </integerConstant>\n")
         self.jacktokenizer.advance()
 
     def write_stringConstant(self):
-        self.output_stream.write("<stringConstant>" +
-                                 self.jacktokenizer.string_val() + "</stringConstant>\n")
+        self.output_stream.write("<stringConstant> " +
+                                 self.jacktokenizer.string_val() + " </stringConstant>\n")
         self.jacktokenizer.advance()
 
     def write_type(self):
