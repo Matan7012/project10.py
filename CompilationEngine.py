@@ -39,8 +39,8 @@ class CompilationEngine:
                     self.compile_subroutine()
                 elif keyword == 'VAR':
                     self.compile_var_dec()
-            print(self.jacktokenizer.has_more_tokens())
-            self.jacktokenizer.advance() #MAYBE WITHOUT THIS
+            # print(self.jacktokenizer.has_more_tokens())
+            # self.jacktokenizer.advance() #MAYBE WITHOUT THIS
 
     def compile_class(self) -> None:
         """Compiles a complete class."""
@@ -49,6 +49,7 @@ class CompilationEngine:
         self.write_keyword()
         self.write_identifier()
         self.write_symbol()
+
         while self.jacktokenizer.keyword() == "STATIC" or self.jacktokenizer.keyword() == "FIELD":
             self.compile_class_var_dec()
         while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyword() == "FUNCTION" \
@@ -107,7 +108,6 @@ class CompilationEngine:
         enclosing "()".
         """
         self.output_stream.write("<parameterList>\n")
-
         if self.jacktokenizer.token_type() == "KEYWORD":
             self.write_type()
 
@@ -123,13 +123,11 @@ class CompilationEngine:
     def compile_subroutineBody(self):
         """ I added this so this is not need the open statements"""
         self.output_stream.write("<subroutineBody>\n")
-
         self.write_symbol()
-
-        while self.jacktokenizer.keyword == "VOID":
+        while self.jacktokenizer.keyword() == "VAR":
             self.compile_var_dec()
-
-        self.compile_statements()
+        if self.jacktokenizer.keyword() in ["LET", "IF", "DO", "WHILE", "RETURN"]:
+            self.compile_statements()
 
         self.write_symbol()
 
@@ -145,9 +143,10 @@ class CompilationEngine:
         self.write_type()
 
         self.write_identifier()
-        while self.jacktokenizer.symbol() != ";":
+        while self.jacktokenizer.symbol() == ",":
             self.write_symbol()
             self.write_identifier()
+            print(self.jacktokenizer.symbol())  # not here
 
         self.write_symbol()
         self.output_stream.write("</varDec>\n")
@@ -361,4 +360,3 @@ class CompilationEngine:
             self.write_identifier()
         else:
             self.write_keyword()
-        self.jacktokenizer.advance()
