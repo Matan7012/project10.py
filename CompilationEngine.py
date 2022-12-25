@@ -55,8 +55,12 @@ class CompilationEngine:
         while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyword() == "FUNCTION" \
                 or self.jacktokenizer.keyword() == "METHOD":
             self.compile_subroutine()
-
-        self.write_symbol()
+        # the most fuck
+        if self.jacktokenizer.has_more_tokens():
+            self.write_symbol()
+        else:
+            self.output_stream.write("<symbol>" +
+                                     self.jacktokenizer.symbol() + "</symbol>\n")
 
         self.output_stream.write("</class>\n")
 
@@ -143,10 +147,10 @@ class CompilationEngine:
         self.write_type()
 
         self.write_identifier()
+
         while self.jacktokenizer.symbol() == ",":
             self.write_symbol()
             self.write_identifier()
-            print(self.jacktokenizer.symbol())  # not here
 
         self.write_symbol()
         self.output_stream.write("</varDec>\n")
@@ -188,6 +192,7 @@ class CompilationEngine:
         self.output_stream.write("<letStatement>\n")
         self.write_keyword()
         self.write_identifier()
+
         if self.jacktokenizer.symbol() == "[":
             self.write_symbol()
             self.compile_expression()
@@ -269,6 +274,9 @@ class CompilationEngine:
         part of this term and should not be advanced over.
         """
         # Your code goes here!
+        self.output_stream.write("<term>\n")
+
+        print("MATAN!",self.jacktokenizer.token_type())
         if self.jacktokenizer.token_type() == "INT_CONST":
             self.write_integerConstant()
         elif self.jacktokenizer.token_type() == "STRING_CONST":
@@ -285,6 +293,7 @@ class CompilationEngine:
                 self.compile_term()  # recursive?
         elif self.jacktokenizer.token_type() == "IDENTIFIER":
             self.write_identifier()
+            print("MATAN!")
             if self.jacktokenizer.symbol() == "[":
                 self.write_symbol()
                 self.compile_expression()
@@ -294,11 +303,13 @@ class CompilationEngine:
                 self.compile_expression_list()
                 self.write_symbol()
             elif self.jacktokenizer.symbol() == ".":
+                print("MATAN!")
                 self.write_symbol()
                 self.write_identifier()
                 self.write_symbol()
                 self.compile_expression_list()
                 self.write_symbol()
+        self.output_stream.write("</term>\n")
 
     def compile_subroutineCall(self):
         """ Compiles a subroutineCall"""
@@ -356,7 +367,8 @@ class CompilationEngine:
         self.jacktokenizer.advance()
 
     def write_type(self):
-        if self.jacktokenizer.token_type() == "IDENTIFIER":
-            self.write_identifier()
+        if self.jacktokenizer.token_type() == "KEYWORD":
+            if self.jacktokenizer.keyword() in ["INT", "CHAR", "BOOLEAN"]:
+                self.write_keyword()
         else:
-            self.write_keyword()
+            self.write_identifier()

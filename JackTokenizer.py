@@ -182,7 +182,7 @@ class JackTokenizer:
         Identifier_at_start = re.search(find_Identifier_regex, self.input_lines[self.i])
         Identifier_bool = not (Identifier_at_start is None)
         if Identifier_bool:
-            self.set_according_to_regex("STRING_CONST", Identifier_at_start.group(0), find_Identifier_regex)
+            self.set_according_to_regex("IDENTIFIER", Identifier_at_start.group(0), find_Identifier_regex)
             return
         return Exception()
         # Your code goes here!
