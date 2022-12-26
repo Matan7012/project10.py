@@ -149,7 +149,7 @@ class JackTokenizer:
 
         # print(self.i)
         # print(self.word)
-        print(self.input_lines[self.i], 'the input line')
+        print(self.token_type_str, 'the keyword = ', self.word)
         # Handaling symbols
         if self.input_lines[self.i][0] in SYMBOLS:
             self.token_type_str = "SYMBOL"
@@ -177,7 +177,7 @@ class JackTokenizer:
         if quote_bool:
             self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
             return
-        find_Identifier_regex = '^([A-z]|_|[0-9])+'
+        find_Identifier_regex = '^([A-Z]|[a-z]|_|[0-9])+'
         Identifier_at_start = re.search(find_Identifier_regex, self.input_lines[self.i])
         Identifier_bool = not (Identifier_at_start is None)
         if Identifier_bool:
