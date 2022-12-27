@@ -162,7 +162,7 @@ class JackTokenizer:
             keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
             keyword_bool = not (keyword_at_start is None)
             if keyword_bool:
-                self.set_according_to_regex("KEYWORD", keyword_at_start.group(0).upper(), find_keyword_at_start_regex)
+                self.set_according_to_regex("KEYWORD", keyword_at_start.group(0).lower(), find_keyword_at_start_regex)
                 return
 
             find_numbers_at_start_regex = r'^(' + '[0-9]+' + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
@@ -220,6 +220,12 @@ class JackTokenizer:
               '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' | '^' | '#'
         """
         # Your code goes here!
+        if self.word == '<':
+            return '&lt'
+        elif self.word == '>':
+            return '&gt'
+        elif self.word == '&':
+            return '&amp'
         return self.word
 
     def identifier(self) -> str:
