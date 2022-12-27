@@ -39,13 +39,16 @@ class CompilationEngine:
                     self.compile_subroutine()
                 elif keyword == 'VAR':
                     self.compile_var_dec()
+        #
+        # with open("Square\Main.jack", 'r') as file:
+        #     data = file.read().replace('\n', '')
+        #     #print(data)
             # print(self.jacktokenizer.has_more_tokens())
             # self.jacktokenizer.advance() #MAYBE WITHOUT THIS
 
     def compile_class(self) -> None:
         """Compiles a complete class."""
         self.output_stream.write("<class>\n")
-
         self.write_keyword()
         self.write_identifier()
         self.write_symbol()
@@ -55,12 +58,7 @@ class CompilationEngine:
         while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyword() == "FUNCTION" \
                 or self.jacktokenizer.keyword() == "METHOD":
             self.compile_subroutine()
-        # the most fuck
-        if self.jacktokenizer.has_more_tokens():
-            self.write_symbol()
-        else:
-            self.output_stream.write("<symbol>" +
-                                     self.jacktokenizer.symbol() + "</symbol>\n")
+        self.write_symbol()
 
         self.output_stream.write("</class>\n")
 
@@ -329,6 +327,7 @@ class CompilationEngine:
         """Compiles a (possibly empty) comma-separated list of expressions."""
         self.output_stream.write("<expressionList>\n")
         if self.jacktokenizer.token_type() == "SYMBOL" and self.jacktokenizer.symbol() == ")":
+            self.output_stream.write("</expressionList>\n")
             return
         # if self.jacktokenizer.token_type() != "SYMBOL" or self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
         self.compile_expression()

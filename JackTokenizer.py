@@ -141,49 +141,49 @@ class JackTokenizer:
         This method should be called if has_more_tokens() is true. 
         Initially there is no current token.
         """
-
-        self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
-        while self.input_lines[self.i] == '':
-            self.i += 1
+        if self.has_more_tokens():         # trick for not do advance in the end of things that done, need to be in tokenizer
             self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
+            while self.input_lines[self.i] == '':
+                self.i += 1
+                self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
 
-        # print(self.i)
-        # print(self.word)
-        print(self.token_type_str, 'the keyword = ', self.word)
-        # Handaling symbols
-        if self.input_lines[self.i][0] in SYMBOLS:
-            self.token_type_str = "SYMBOL"
-            self.word = self.input_lines[self.i][0]
-            self.input_lines[self.i] = self.input_lines[self.i][1:]
-            return
+            # print(self.i)
+            # print(self.word)
+            print(self.token_type_str, 'the keyword = ', self.word)
+            # Handaling symbols
+            if self.input_lines[self.i][0] in SYMBOLS:
+                self.token_type_str = "SYMBOL"
+                self.word = self.input_lines[self.i][0]
+                self.input_lines[self.i] = self.input_lines[self.i][1:]
+                return
 
-        # Handaling keywords
-        find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
-        keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
-        keyword_bool = not (keyword_at_start is None)
-        if keyword_bool:
-            self.set_according_to_regex("KEYWORD", keyword_at_start.group(0).upper(), find_keyword_at_start_regex)
-            return
+            # Handaling keywords
+            find_keyword_at_start_regex = r'^(' + KEYWORD_REGEX + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
+            keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
+            keyword_bool = not (keyword_at_start is None)
+            if keyword_bool:
+                self.set_according_to_regex("KEYWORD", keyword_at_start.group(0).upper(), find_keyword_at_start_regex)
+                return
 
-        find_numbers_at_start_regex = r'^(' + '[0-9]+' + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
-        number_at_start = re.search(find_numbers_at_start_regex, self.input_lines[self.i])
-        number_bool = not (number_at_start is None)
-        if number_bool:
-            self.set_according_to_regex("INT_CONST", number_at_start.group(0), find_numbers_at_start_regex)
-            return
-        find_double_quotes_regex = '^(")(.+)(")'
-        quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
-        quote_bool = not (quotes_at_start is None)
-        if quote_bool:
-            self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
-            return
-        find_Identifier_regex = '^([A-Z]|[a-z]|_|[0-9])+'
-        Identifier_at_start = re.search(find_Identifier_regex, self.input_lines[self.i])
-        Identifier_bool = not (Identifier_at_start is None)
-        if Identifier_bool:
-            self.set_according_to_regex("IDENTIFIER", Identifier_at_start.group(0), find_Identifier_regex)
-            return
-        return Exception()
+            find_numbers_at_start_regex = r'^(' + '[0-9]+' + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
+            number_at_start = re.search(find_numbers_at_start_regex, self.input_lines[self.i])
+            number_bool = not (number_at_start is None)
+            if number_bool:
+                self.set_according_to_regex("INT_CONST", number_at_start.group(0), find_numbers_at_start_regex)
+                return
+            find_double_quotes_regex = '^(")(.+)(")'
+            quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
+            quote_bool = not (quotes_at_start is None)
+            if quote_bool:
+                self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
+                return
+            find_Identifier_regex = '^([A-Z]|[a-z]|_|[0-9])+'
+            Identifier_at_start = re.search(find_Identifier_regex, self.input_lines[self.i])
+            Identifier_bool = not (Identifier_at_start is None)
+            if Identifier_bool:
+                self.set_according_to_regex("IDENTIFIER", Identifier_at_start.group(0), find_Identifier_regex)
+                return
+            return Exception()
         # Your code goes here!
     def set_according_to_regex(self, token_type_string, word_string, start_regex):
         self.token_type_str = token_type_string
