@@ -29,15 +29,15 @@ class CompilationEngine:
         # output_stream.write("Hello world! \n")
         while self.jacktokenizer.has_more_tokens():
             token_type = self.jacktokenizer.token_type()
-            if token_type == "KEYWORD":
+            if token_type == "keyword":
                 keyword = self.jacktokenizer.keyword()
-                if keyword == 'CLASS':
+                if keyword == 'class':
                     self.compile_class()
-                elif keyword == 'STATIC' or 'FIELD':
+                elif keyword == 'static' or 'field':
                     self.compile_class_var_dec()
-                elif keyword in ['CONSTRUCTOR', 'FUNCTION', 'METHOD']:
+                elif keyword in ['constructor', 'function', 'method']:
                     self.compile_subroutine()
-                elif keyword == 'VAR':
+                elif keyword == 'var':
                     self.compile_var_dec()
         #
         # with open("Square\Main.jack", 'r') as file:
@@ -53,10 +53,10 @@ class CompilationEngine:
         self.write_identifier()
         self.write_symbol()
 
-        while self.jacktokenizer.keyword() == "STATIC" or self.jacktokenizer.keyword() == "FIELD":
+        while self.jacktokenizer.keyword() == "static" or self.jacktokenizer.keyword() == "field":
             self.compile_class_var_dec()
-        while self.jacktokenizer.keyword() == "CONSTRUCTOR" or self.jacktokenizer.keyword() == "FUNCTION" \
-                or self.jacktokenizer.keyword() == "METHOD":
+        while self.jacktokenizer.keyword() == "constructor" or self.jacktokenizer.keyword() == "function" \
+                or self.jacktokenizer.keyword() == "method":
             self.compile_subroutine()
         self.write_symbol()
 
@@ -87,7 +87,7 @@ class CompilationEngine:
         self.output_stream.write("<subroutineDec>\n")
 
         self.write_keyword()
-        if self.jacktokenizer.keyword() == "VOID":
+        if self.jacktokenizer.keyword() == "void":
             self.write_keyword()
         else:
             self.write_type()
@@ -109,7 +109,7 @@ class CompilationEngine:
         enclosing "()".
         """
         self.output_stream.write("<parameterList>\n")
-        if self.jacktokenizer.token_type() == "KEYWORD":
+        if self.jacktokenizer.token_type() == "keyword":
             self.write_type()
 
             self.write_identifier()
@@ -125,9 +125,9 @@ class CompilationEngine:
         """ I added this so this is not need the open statements"""
         self.output_stream.write("<subroutineBody>\n")
         self.write_symbol()
-        while self.jacktokenizer.keyword() == "VAR":
+        while self.jacktokenizer.keyword() == "var":
             self.compile_var_dec()
-        if self.jacktokenizer.keyword() in ["LET", "IF", "DO", "WHILE", "RETURN"]:
+        if self.jacktokenizer.keyword() in ["let", "if", "do", "while", "return"]:
             self.compile_statements()
 
         self.write_symbol()
@@ -158,16 +158,16 @@ class CompilationEngine:
         """
 
         self.output_stream.write("<statements>\n")
-        while self.jacktokenizer.token_type() == "KEYWORD":
-            if self.jacktokenizer.keyword() == "LET":
+        while self.jacktokenizer.token_type() == "keyword":
+            if self.jacktokenizer.keyword() == "let":
                 self.compile_let()
-            elif self.jacktokenizer.keyword() == "IF":
+            elif self.jacktokenizer.keyword() == "if":
                 self.compile_if()
-            elif self.jacktokenizer.keyword() == "WHILE":
+            elif self.jacktokenizer.keyword() == "while":
                 self.compile_while()
-            elif self.jacktokenizer.keyword() == "DO":
+            elif self.jacktokenizer.keyword() == "do":
                 self.compile_do()
-            elif self.jacktokenizer.keyword() == "RETURN":
+            elif self.jacktokenizer.keyword() == "return":
                 self.compile_return()
 
         self.output_stream.write("</statements>\n")
@@ -220,7 +220,7 @@ class CompilationEngine:
         """Compiles a return statement."""
         self.output_stream.write("<returnStatement>\n")
         self.write_keyword()
-        if self.jacktokenizer.token_type() != "SYMBOL":
+        if self.jacktokenizer.token_type() != "symbol":
             self.compile_expression()
         elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
             self.compile_expression()
@@ -240,7 +240,7 @@ class CompilationEngine:
         self.compile_statements()
         self.write_symbol()
 
-        if self.jacktokenizer.keyword() == "ELSE":
+        if self.jacktokenizer.keyword() == "else":
             self.write_keyword()
             self.write_symbol()
             self.compile_statements()
@@ -253,8 +253,8 @@ class CompilationEngine:
         self.output_stream.write("<expression>\n")
 
         self.compile_term()
-        op = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
-        while (self.jacktokenizer.token_type() == "SYMBOL") and \
+        op = ['+', '-', '*', '/', '&amp;', '|', '&lt;', '&gt;', '=']
+        while (self.jacktokenizer.token_type() == "symbol") and \
                 (self.jacktokenizer.symbol() in op):
             self.write_symbol()
             self.compile_term()
@@ -273,13 +273,13 @@ class CompilationEngine:
         # Your code goes here!
         self.output_stream.write("<term>\n")
 
-        if self.jacktokenizer.token_type() == "INT_CONST":
+        if self.jacktokenizer.token_type() == "int_const":
             self.write_integerConstant()
-        elif self.jacktokenizer.token_type() == "STRING_CONST":
+        elif self.jacktokenizer.token_type() == "string_const":
             self.write_stringConstant()
-        elif self.jacktokenizer.token_type() == "KEYWORD":
+        elif self.jacktokenizer.token_type() == "keyword":
             self.write_keyword()
-        elif self.jacktokenizer.token_type() == "SYMBOL":
+        elif self.jacktokenizer.token_type() == "symbol":
             if self.jacktokenizer.symbol() == "(":
                 self.write_symbol()
                 self.compile_expression()
@@ -287,7 +287,7 @@ class CompilationEngine:
             elif self.jacktokenizer.symbol() in ['-', '~', '^', '#']:
                 self.write_symbol()
                 self.compile_term()  # recursive?
-        elif self.jacktokenizer.token_type() == "IDENTIFIER":
+        elif self.jacktokenizer.token_type() == "identifier":
             self.write_identifier()
             if self.jacktokenizer.symbol() == "[":
                 self.write_symbol()
@@ -326,12 +326,12 @@ class CompilationEngine:
 
         """Compiles a (possibly empty) comma-separated list of expressions."""
         self.output_stream.write("<expressionList>\n")
-        if self.jacktokenizer.token_type() == "SYMBOL" and self.jacktokenizer.symbol() == ")":
+        if self.jacktokenizer.token_type() == "symbol" and self.jacktokenizer.symbol() == ")":
             self.output_stream.write("</expressionList>\n")
             return
         # if self.jacktokenizer.token_type() != "SYMBOL" or self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
         self.compile_expression()
-        while (self.jacktokenizer.token_type() == "SYMBOL") and (self.jacktokenizer.symbol() == ","):
+        while (self.jacktokenizer.token_type() == "symbol") and (self.jacktokenizer.symbol() == ","):
             self.write_symbol()
             self.compile_expression()
         # elif self.jacktokenizer.symbol() in ["(", "-", "~", '^', '#']:
@@ -368,8 +368,8 @@ class CompilationEngine:
         self.jacktokenizer.advance()
 
     def write_type(self):
-        if self.jacktokenizer.token_type() == "KEYWORD":
-            if self.jacktokenizer.keyword() in ["INT", "CHAR", "BOOLEAN"]:
+        if self.jacktokenizer.token_type() == "keyword":
+            if self.jacktokenizer.keyword() in ["int", "char", "boolean"]:
                 self.write_keyword()
         else:
             self.write_identifier()

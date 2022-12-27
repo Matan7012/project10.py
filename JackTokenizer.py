@@ -130,7 +130,7 @@ class JackTokenizer:
             self.i += 1
             self.input_lines[self.i] = re.sub("^\s*", "", self.input_lines[self.i])
 
-        if self.i < (len(self.input_lines)-1) or self.input_lines[self.i] != '':
+        if self.i < (len(self.input_lines)-1):
             #print(self.i)
             #print(len(self.input_lines))
             return True
@@ -152,7 +152,7 @@ class JackTokenizer:
             print(self.token_type_str, 'the keyword = ', self.word)
             # Handaling symbols
             if self.input_lines[self.i][0] in SYMBOLS:
-                self.token_type_str = "SYMBOL"
+                self.token_type_str = "symbol"
                 self.word = self.input_lines[self.i][0]
                 self.input_lines[self.i] = self.input_lines[self.i][1:]
                 return
@@ -162,26 +162,26 @@ class JackTokenizer:
             keyword_at_start = re.search(find_keyword_at_start_regex, self.input_lines[self.i])
             keyword_bool = not (keyword_at_start is None)
             if keyword_bool:
-                self.set_according_to_regex("KEYWORD", keyword_at_start.group(0).lower(), find_keyword_at_start_regex)
+                self.set_according_to_regex("keyword", keyword_at_start.group(0).lower(), find_keyword_at_start_regex)
                 return
 
             find_numbers_at_start_regex = r'^(' + '[0-9]+' + r')(?=(' + SYMBOL_REGEX + r'|\s+))'
             number_at_start = re.search(find_numbers_at_start_regex, self.input_lines[self.i])
             number_bool = not (number_at_start is None)
             if number_bool:
-                self.set_according_to_regex("INT_CONST", number_at_start.group(0), find_numbers_at_start_regex)
+                self.set_according_to_regex("int_const", number_at_start.group(0), find_numbers_at_start_regex)
                 return
             find_double_quotes_regex = '^(")(.+)(")'
             quotes_at_start = re.search(find_double_quotes_regex, self.input_lines[self.i])
             quote_bool = not (quotes_at_start is None)
             if quote_bool:
-                self.set_according_to_regex("STRING_CONST", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
+                self.set_according_to_regex("string_const", quotes_at_start.group(0)[1:-1], find_double_quotes_regex)
                 return
             find_Identifier_regex = '^([A-Z]|[a-z]|_|[0-9])+'
             Identifier_at_start = re.search(find_Identifier_regex, self.input_lines[self.i])
             Identifier_bool = not (Identifier_at_start is None)
             if Identifier_bool:
-                self.set_according_to_regex("IDENTIFIER", Identifier_at_start.group(0), find_Identifier_regex)
+                self.set_according_to_regex("identifier", Identifier_at_start.group(0), find_Identifier_regex)
                 return
             return Exception()
         # Your code goes here!
@@ -222,11 +222,11 @@ class JackTokenizer:
         # Your code goes here!
         # returns >, <, and & as &gt, &lt, and &amp.
         if self.word == '<':
-            return '&lt'
+            return '&lt;'
         elif self.word == '>':
-            return '&gt'
+            return '&gt;'
         elif self.word == '&':
-            return '&amp'
+            return '&amp;'
         return self.word
 
     def identifier(self) -> str:
