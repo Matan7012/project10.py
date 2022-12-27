@@ -220,6 +220,7 @@ class JackTokenizer:
               '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' | '^' | '#'
         """
         # Your code goes here!
+        # returns >, <, and & as &gt, &lt, and &amp.
         if self.word == '<':
             return '&lt'
         elif self.word == '>':
